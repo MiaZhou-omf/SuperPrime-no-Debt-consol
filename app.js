@@ -4,8 +4,8 @@ const state = {
   screen: 'entry',
   history: [],
   phone: '(***) ***–7899',
-  offer: 1,
-  accountType: 'Checking',
+  offer: null,
+  accountType: '',
   payment: '',
   paymentSchedule: 'monthly',
   paperless: true,
@@ -23,8 +23,8 @@ const steps = {
   offer: ['Step 2 of 5 · Choose your loan terms', 40],
   deposit: ['Step 3 of 5 · Set up direct deposit', 60],
   payment: ['Step 4 of 5 · Set up payment', 80],
-  review: ['Step 5 of 5 · Confirm and sign', 95],
-  sign: ['Step 5 of 5 · Confirm and sign', 95],
+  review: ['Step 5 of 5 · Confirm and sign', 100],
+  sign: ['Step 5 of 5 · Confirm and sign', 100],
 };
 
 let loadingTimer;
@@ -65,14 +65,14 @@ function footer() {
 }
 
 function shell(content, { partner = false, footer: showFooter = true } = {}) {
-  return `<div class="stage"><section class="phone">${nav(partner)}${progress()}<main class="screen-main">${content}</main>${showFooter ? footer() : ''}</section></div>`;
+  return `<div class="stage"><section class="phone screen-${state.screen}">${nav(partner)}${progress()}<main class="screen-main">${content}</main>${showFooter ? footer() : ''}</section></div>`;
 }
 
 function entry() {
   return shell(`<div class="content stack">
-    <div><h1>Welcome, <span class="pink">{Customer First Name}</span>. Ready to apply for this offer?</h1><p>It should only take a few minutes to wrap up your application.</p></div>
+    <div><h1>Welcome, <span class="pink">Erin</span>. Ready to apply for this offer?</h1><p>It should only take a few minutes to wrap up your application.</p></div>
     <article class="card offer-hero shadow">
-      <div class="offer-top"><div class="approval-ribbon">You have outstanding odds of approval! <button class="tooltip-trigger approval-info" data-action="open-tooltip" data-tooltip="approval" aria-label="What outstanding odds of approval means" aria-expanded="false">ⓘ</button></div><p class="selected-copy">You selected this offer<br>on <strong>Credit Karma</strong></p><button class="tooltip-trigger loan-type-trigger label-medium" data-action="open-tooltip" data-tooltip="unsecured" aria-expanded="false">UNSECURED LOAN</button><div class="offer-price"><strong>$621.26</strong><span>/ monthly payment</span></div><p class="small">Offer expires 4/18/2026</p><div class="details"><div class="row"><span>Loan amount</span><strong>$20,000</strong></div><div class="row"><span>Term</span><strong>36 months</strong></div><div class="row"><span>APR</span><strong>9.5%</strong></div></div></div>
+      <div class="offer-top"><div class="approval-ribbon">You have outstanding odds of approval! <button class="tooltip-trigger approval-info" data-action="open-tooltip" data-tooltip="approval" aria-label="What outstanding odds of approval means" aria-expanded="false"><span class="approval-info-icon" aria-hidden="true"><img class="approval-info-mark" src="./assets/approval-info-mark.svg" alt=""><img class="approval-info-dot" src="./assets/approval-info-dot.svg" alt=""><img class="approval-info-circle" src="./assets/approval-info-circle.svg" alt=""></span></button></div><p class="selected-copy">You selected this offer<br>on <strong>Credit Karma</strong></p><button class="tooltip-trigger loan-type-trigger label-medium" data-action="open-tooltip" data-tooltip="unsecured" aria-expanded="false">UNSECURED LOAN</button><div class="offer-price"><strong>$621.26</strong><span>/ monthly payment</span></div><p class="small">Offer expires 4/18/2026</p><div class="details"><div class="row"><span>Loan amount</span><strong>$20,000</strong></div><div class="row"><span>Term</span><strong>36 months</strong></div><div class="row"><span>APR</span><strong>9.5%</strong></div></div></div>
     </article>
     <div class="entry-links"><p>Read more about our <button class="inline-link" data-action="open-disclosure" data-modal-title="Loan Amounts and Fees">Loan Amounts and Fees.</button></p><button class="inline-link" data-action="open-disclosure" data-modal-title="Learn more about our lending process">Learn more about our lending process</button></div>
     <article class="card stack-sm consent-card"><p><strong>If everything looks good, please read and agree to the terms.</strong></p><div class="consent-control"><label class="check-row"><input id="terms" type="checkbox" aria-describedby="terms-error"><span><strong>By checking this box, I confirm that:</strong></span></label><div class="consent-error" id="terms-error" role="alert" tabindex="-1" hidden><span class="warning-icon" aria-hidden="true"><img class="warning-mark" src="./assets/warning-mark.svg" alt=""><img class="warning-dot" src="./assets/warning-dot.svg" alt=""><img class="warning-circle" src="./assets/warning-circle.svg" alt=""></span><span>Before you continue, please check the box to confirm you've read and agree to the terms.</span></div></div><div class="legal"><p>• I have reviewed, agree to and acknowledge receipt of the <a>Terms of Use</a>, <a>Electronic Consent Agreement</a>, <a>Privacy Notice</a>, <a>Privacy Policy</a>, <a>Informational Communications Authorization</a>, <a>Method Privacy Policy</a> and <a>Method Terms of Service</a>.</p><p>• I authorize OneMain Financial ("OneMain") to share information I provide with service providers for purposes of obtaining and verifying my vehicle registration information, if any, from State DMVs.</p><p>• I also authorize OneMain to obtain my credit report to review my loan application, and to see if I qualify for a credit card product from lending partners of OneMain as well as share my application information with these lending partners.</p><p>• I am not using, or planning to use, a debt relief company to settle debts.</p><p>• I authorize Forward Lending, Inc. d/b/a Method, to be my agent to obtain my credit reports via soft inquiries; share information and related data about my balances with creditors with OneMain; and, if I choose, send my loan proceeds to creditors I select.</p></div><p class="center body-emphasis">Clicking the button below may affect your credit score.</p></article>
@@ -130,7 +130,7 @@ function dashboard() {
       <section class="dashboard-card">
         <h2>Income verification is required to move forward</h2>
         <p>To continue your application, link the bank account that shows your income.</p>
-        <p>If you’re unable to connect your bank account, please call {XXX-XXX-XXXX}.</p>
+        <p>If you’re unable to connect your bank account, please call 888-890-6529.</p>
         <button class="dashboard-verify" type="button" data-action="dashboard-verify">Verify now</button>
         <div class="dashboard-secure"><img src="./assets/dashboard-lock.svg" alt=""><span>Secure account connection through Plaid</span></div>
       </section>
@@ -156,23 +156,47 @@ function loadingOffer() {
 }
 
 const offers = [
-  { tag: 'Highest loan amount', icon: 'highest', amount: '$20,000', monthly: '$631.33', apr: '10.24%', term: '48 months' },
-  { tag: 'Lowest payment', icon: 'lowest', amount: '$20,000', monthly: '$621.26', apr: '13.82%', term: '60 months' },
+  { tag: 'Highest loan amount', icon: 'highest', amount: 23000, monthly: 585.99, apr: 10.24, term: 48, fee: 500 },
+  { tag: 'Lowest payment', icon: 'lowest', amount: 20000, monthly: 463.50, apr: 13.82, term: 60, fee: 400 },
 ];
+
+function selectedOffer() {
+  return offers[state.offer ?? 0];
+}
+
+function currency(value, decimals = 2) {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(value);
+}
+
+function selectedPayment() {
+  const monthly = selectedOffer().monthly;
+  if (state.paymentSchedule === 'biweekly') return monthly * 12 / 26;
+  if (state.paymentSchedule === 'twice-monthly') return monthly / 2;
+  return monthly;
+}
+
+function paymentFrequency() {
+  return { monthly: 'monthly', biweekly: 'every other week', 'twice-monthly': 'twice a month' }[state.paymentSchedule] || 'monthly';
+}
+
+function loanDetailsCard(extraClass = '') {
+  const offer = selectedOffer();
+  return `<div class="review-offer-card ${extraClass}"><div class="review-offer-rows"><div class="row"><span>Loan amount</span><strong>${currency(offer.amount)}<small>This is an unsecured loan.</small></strong></div><div class="row"><span>Fees</span><strong>${currency(offer.fee)}<small>The total cost of loan is ${currency(offer.amount + offer.fee)}.</small></strong></div><div class="row"><span>Term</span><strong>${offer.term} months</strong></div><div class="row"><span>APR</span><strong>${offer.apr.toFixed(2)}%</strong></div></div><div class="review-payment-due"><span>Due each month</span><strong>${currency(offer.monthly)}/mo</strong></div></div>`;
+}
 
 function offer() {
   return shell(`<div class="content stack">
-    <div><h1>You’re approved! Choose the loan that works for you.</h1><p>You qualify for multiple loan options, <span class="pink">{Customer First Name}</span>.<sup>1</sup> Select the best fit for your needs.</p></div>
-    <div class="choice-list">${offers.map((o, i) => `<label class="choice ${state.offer === i ? 'selected' : ''}"><div class="choice-head"><span class="tag"><span class="offer-tag-icon offer-tag-icon-${o.icon}" aria-hidden="true"></span>${o.tag}</span><input type="radio" name="offer" value="${i}" ${state.offer === i ? 'checked' : ''}></div><div class="amount">${o.monthly} <small>/ monthly payment</small></div><div class="details"><div class="row"><span>Loan amount</span><strong>${o.amount}</strong></div><div class="row"><span>Term</span><strong>${o.term}</strong></div><div class="row"><span>APR</span><strong>${o.apr}</strong></div></div></label>`).join('')}</div>
-    <button class="btn primary" data-action="choose-offer">Save and continue</button><p class="ds-footer-note"><sup>1</sup>These quotes are <a class="link">unsecured loans</a> closest to your requested amount. Offers may refresh at 12 am ET. To compare all your options and learn more details about <button class="footer-inline-link" type="button" data-action="open-disclosure" data-modal-title="Loan Amounts and Fees">our loan amounts and fees</button>, including loans secured with your vehicle, please <a class="link" href="tel:8888906529">give us a call.</a></p>
+    <div><h1>You’re approved! Choose the loan that works for you.</h1><p>You qualify for multiple loan options, <span class="pink">Erin</span>.<sup>1</sup> Select the best fit for your needs.</p></div>
+    <div class="choice-list">${offers.map((o, i) => `<label class="choice ${state.offer === i ? 'selected' : ''}"><div class="choice-head"><span class="tag offer-tag"><img class="offer-tag-icon" src="./assets/offer-${o.icon}-icon.svg" alt="">${o.tag}</span><input type="radio" name="offer" value="${i}" ${state.offer === i ? 'checked' : ''}></div><div class="amount">${currency(o.monthly)} <small>/ monthly payment</small></div><div class="details"><div class="row"><span>Loan amount</span><strong>${currency(o.amount, 0)}</strong></div><div class="row"><span>Term</span><strong>${o.term} months</strong></div><div class="row"><span>APR</span><strong>${o.apr.toFixed(2)}%</strong></div></div></label>`).join('')}</div>
+    <button class="btn primary" data-action="choose-offer" ${state.offer === null ? 'disabled' : ''}>Save and continue</button><p class="ds-footer-note"><sup>1</sup>These quotes are <a class="link">unsecured loans</a> closest to your requested amount. Offers may refresh at 12 am ET. To compare all your options and learn more details about <button class="footer-inline-link" type="button" data-action="open-disclosure" data-modal-title="Loan Amounts and Fees">our loan amounts and fees</button>, including loans secured with your vehicle, please <a class="link" href="tel:8888906529">give us a call.</a></p>
   </div>`);
 }
 
 function deposit() {
   return shell(`<div class="content stack">
     <div><h1>Tell us where to send the money</h1><p>We’ll deposit the funds directly into your bank account. Enter your bank account details.</p></div>
-    <div class="stack-sm"><div class="field"><label for="routing">Routing number</label><input id="routing" inputmode="numeric" maxlength="9" value="${state.routing}" aria-describedby="routing-error">${inputErrorMarkup('routing-error')}</div><div class="field"><label for="account">Account number</label><input id="account" inputmode="numeric" value="${state.account}" aria-describedby="account-error">${inputErrorMarkup('account-error')}</div><div class="field"><label for="confirm-account">Confirm account number</label><input id="confirm-account" inputmode="numeric" aria-describedby="confirm-account-error">${inputErrorMarkup('confirm-account-error')}</div></div>
-    <div><div class="field-label">Type of account</div><div style="display:flex;gap:20px;margin-top:16px"><label class="radio-row"><input type="radio" name="account-type" value="Checking" ${state.accountType === 'Checking' ? 'checked' : ''}><span>Checking</span></label><label class="radio-row"><input type="radio" name="account-type" value="Savings" ${state.accountType === 'Savings' ? 'checked' : ''}><span>Savings</span></label></div></div>
+    <div class="stack-sm"><div class="field"><label for="routing">Routing number</label><input id="routing" inputmode="numeric" pattern="[0-9]*" maxlength="9" value="${state.routing}" aria-describedby="routing-error">${inputErrorMarkup('routing-error')}</div><div class="field"><label for="account">Account number</label><input id="account" inputmode="numeric" pattern="[0-9]*" value="${state.account}" aria-describedby="account-error">${inputErrorMarkup('account-error')}</div><div class="field"><label for="confirm-account">Confirm account number</label><input id="confirm-account" inputmode="numeric" pattern="[0-9]*" aria-describedby="confirm-account-error">${inputErrorMarkup('confirm-account-error')}</div></div>
+    <fieldset class="account-type-field" aria-describedby="account-type-error"><legend class="field-label">Type of account</legend><div class="account-type-options"><label class="radio-row"><input type="radio" name="account-type" value="Checking" ${state.accountType === 'Checking' ? 'checked' : ''}><span>Checking</span></label><label class="radio-row"><input type="radio" name="account-type" value="Savings" ${state.accountType === 'Savings' ? 'checked' : ''}><span>Savings</span></label></div>${inputErrorMarkup('account-type-error')}</fieldset>
     <div class="account-visual"><h3 class="center">Where to find your routing and account numbers</h3><div class="check-guide"><img class="check-example" src="./assets/check-example.png" alt="Example check"><div class="check-pointers" aria-hidden="true"><div class="check-pointer"><span class="check-pointer-line"></span><span class="check-pointer-tick"></span><span>Routing number</span></div><div class="check-pointer"><span class="check-pointer-line"></span><span class="check-pointer-tick"></span><span>Account number</span></div></div></div></div>
     <button class="btn primary" data-action="save-deposit">Save and continue</button>
   </div>`);
@@ -181,19 +205,20 @@ function deposit() {
 function payment() {
   return shell(`<div class="content stack">
     <div><h1>Choose your payment and billing preferences</h1><p>Save time each month with AutoPay. Your payments will be made automatically on a schedule you select.</p></div>
-    <div class="payment-options"><div class="payment-autopay"><label class="flat-option payment-choice"><input type="radio" name="payment" value="autopay" ${state.payment === 'autopay' ? 'checked' : ''}><span><span class="payment-choice-title">Set up AutoPay <span class="tag">☆ Recommended</span></span>${state.payment === 'autopay' ? `<span class="small payment-bank">${state.autopayAccountType} Acct#: XXXX${state.autopayAccount}</span><button class="inline-link small" type="button" data-action="change-autopay-account">Change bank account</button>` : ''}</span></label>${state.payment === 'autopay' ? autopaySchedules() : ''}</div><label class="flat-option payment-choice"><input type="radio" name="payment" value="manual" ${state.payment === 'manual' ? 'checked' : ''}><span>I’ll make payments one at a time<span class="small payment-description">Due on the <span class="pink">{PaymentDueDay}</span> of every month. You can pay online, by phone or by mail. For more information, see <a class="link">our payments FAQ.</a></span></span></label></div>
-    <article class="billing-status"><h2>Paperless billing is ${state.paperless ? 'on' : 'off'}</h2><p class="small">${state.paperless ? 'We’ll email you at <span class="pink">{emailaddress@gmail.com}</span> each month when your billing statement becomes available online. You can change the email address later if needed.' : 'We’ll mail you paper billing statements each month.'}</p><button class="text-button billing-toggle" data-action="${state.paperless ? 'paper-modal' : 'enable-paperless'}">${state.paperless ? 'Mail me paper statements instead' : 'Go paperless instead'}</button></article>
+    <div class="payment-options"><div class="payment-autopay"><label class="flat-option payment-choice"><input type="radio" name="payment" value="autopay" ${state.payment === 'autopay' ? 'checked' : ''}><span><span class="payment-choice-title">Set up AutoPay <span class="tag">☆ Recommended</span></span>${state.payment === 'autopay' ? `<span class="small payment-bank">${state.autopayAccountType} Acct#: XXXX${state.autopayAccount}</span><button class="inline-link small" type="button" data-action="change-autopay-account">Change bank account</button>` : ''}</span></label>${state.payment === 'autopay' ? autopaySchedules() : ''}</div><label class="flat-option payment-choice"><input type="radio" name="payment" value="manual" ${state.payment === 'manual' ? 'checked' : ''}><span>I’ll make payments one at a time<span class="small payment-description">Due on the <span class="pink">10th</span> of every month. You can pay online, by phone or by mail. For more information, see <a class="link">our payments FAQ.</a></span></span></label></div>
+    <article class="billing-status"><h2>Paperless billing is ${state.paperless ? 'on' : 'off'}</h2><p class="small">${state.paperless ? 'We’ll email you at <span class="pink">erin.miller@example.com</span> each month when your billing statement becomes available online. You can change the email address later if needed.' : 'We’ll mail you paper billing statements each month.'}</p><button class="text-button billing-toggle" data-action="${state.paperless ? 'paper-modal' : 'enable-paperless'}">${state.paperless ? 'Mail me paper statements instead' : 'Go paperless instead'}</button></article>
     <button class="btn primary" data-action="save-payment" ${state.payment ? '' : 'disabled'}>Save and continue</button>
   </div>`);
 }
 
 function autopaySchedules() {
+  const monthly = selectedOffer().monthly;
   const schedules = [
-    ['monthly', '$621.26', 'Monthly', 'Your payment will be made on the {10th} each month.'],
-    ['biweekly', '$310.63', 'Every other week', 'Your payment will be made every 14 days.'],
-    ['twice-monthly', '$310.63', 'Twice a month', 'Your payment will be made on the {10th} and {24th} each month.'],
+    ['monthly', monthly, 'Monthly', 'Your payment will be made on the 10th each month.'],
+    ['biweekly', monthly * 12 / 26, 'Every other week', 'Your payment will be made every 14 days.'],
+    ['twice-monthly', monthly / 2, 'Twice a month', 'Your payment will be made on the 10th and 24th each month.'],
   ];
-  return `<fieldset class="schedule-options"><legend>Select your payment schedule:</legend>${schedules.map(([value, amount, frequency, description]) => `<label class="schedule-card ${state.paymentSchedule === value ? 'selected' : ''}"><input type="radio" name="payment-schedule" value="${value}" ${state.paymentSchedule === value ? 'checked' : ''}><span class="schedule-copy"><strong>${amount}</strong><b>${frequency}</b><span class="schedule-detail">${scheduleCalendar(value)}<span>${description}</span></span></span></label>`).join('')}</fieldset>`;
+  return `<fieldset class="schedule-options"><legend>Select your payment schedule:</legend>${schedules.map(([value, amount, frequency, description]) => `<label class="schedule-card ${state.paymentSchedule === value ? 'selected' : ''}"><input type="radio" name="payment-schedule" value="${value}" ${state.paymentSchedule === value ? 'checked' : ''}><span class="schedule-copy"><strong>${currency(amount)}</strong><b>${frequency}</b><span class="schedule-detail">${scheduleCalendar(value)}<span>${description}</span></span></span></label>`).join('')}</fieldset>`;
 }
 
 function scheduleCalendar(type) {
@@ -213,12 +238,14 @@ function scheduleCalendar(type) {
 
 function review() {
   const depositLastFour = state.account.slice(-4) || '7285';
+  const paymentAmount = currency(selectedPayment());
+  const frequency = paymentFrequency();
   return shell(`<div class="content review-content">
-    <div class="review-headline"><h1>Confirm your loan details before you e-sign</h1><p>Almost done! Please review and confirm your selections.</p><p>The below information is accurate as of today, <span class="pink">{Current Date}</span>.</p></div>
-    <div class="review-party-card"><div><h3>Lender</h3><p>OneMain Financial<br><span class="pink">{2115 Linwood Ave.<br>Fort Lee, NJ 07024}</span></p></div><div><h3>Borrower</h3><p class="pink">{First Name}<br>{Last Name}</p></div></div>
-    <div class="review-offer-card"><div class="review-offer-rows"><div class="row"><span>Loan amount</span><strong>$23,000.00<small>This is an unsecured loan.</small></strong></div><div class="row"><span>Fees</span><strong>$500.00<small>The total cost of loan is $23,500.00.</small></strong></div><div class="row"><span>Term</span><strong>36 months</strong></div><div class="row"><span>APR</span><strong>10.24%</strong></div></div><div class="review-payment-due"><span>Due each month</span><strong>$644.98/mo</strong></div></div>
+    <div class="review-headline"><h1>Confirm your loan details before you e-sign</h1><p>Almost done! Please review and confirm your selections.</p><p>The below information is accurate as of today, <span class="pink">08/13/2026</span>.</p></div>
+    <div class="review-party-card"><div><h3>Lender</h3><p>OneMain Financial<br><span class="pink">2115 Linwood Ave.<br>Fort Lee, NJ 07024</span></p></div><div><h3>Borrower</h3><p class="pink">Erin<br>Miller</p></div></div>
+    ${loanDetailsCard()}
     <section class="review-card"><h2>Direct deposit</h2><p>${state.accountType} account</p><strong>Bank of America ...${depositLastFour}</strong><button class="review-link" type="button" data-action="change-deposit-account">Change account</button></section>
-    <section class="review-card review-autopay"><h2>${state.payment === 'autopay' ? 'AutoPay is on' : 'AutoPay is off'}</h2>${state.payment === 'autopay' ? `<p>Automatic payments of $<span class="pink">{RecurringPaymentAmount}</span> will be made <span class="pink">{PaymentFrequency}</span> from your bank account.</p><strong>Bank of America ...${state.autopayAccount}</strong>` : '<p>You’ll make payments one at a time.</p>'}<button class="review-link" type="button" data-action="edit-payment">Edit AutoPay settings</button>${state.payment === 'autopay' ? '<div class="divider"></div><p>Your first payment of $<span class="pink">{RecurringPaymentAmount}</span> will be made on <span class="pink">{FirstPaymentDate}</span>.</p><p class="review-note">Note: Your first payment amount may be higher than your monthly payment amount because of a longer first payment period.</p>' : ''}</section>
+    <section class="review-card review-autopay"><h2>${state.payment === 'autopay' ? 'AutoPay is on' : 'AutoPay is off'}</h2>${state.payment === 'autopay' ? `<p>Automatic payments of <span class="pink">${paymentAmount}</span> will be made <span class="pink">${frequency}</span> from your bank account.</p><strong>Bank of America ...${state.autopayAccount}</strong>` : '<p>You’ll make payments one at a time.</p>'}<button class="review-link" type="button" data-action="edit-payment">Edit AutoPay settings</button>${state.payment === 'autopay' ? `<div class="divider"></div><p>Your first payment of <span class="pink">${paymentAmount}</span> will be made on <span class="pink">09/20/2026</span>.</p><p class="review-note">Note: Your first payment amount may be higher than your monthly payment amount because of a longer first payment period.</p>` : ''}</section>
     <section class="review-card"><h2>Paperless billing is ${state.paperless ? 'on' : 'off'}</h2><p>${state.paperless ? 'You’re getting paperless statements.' : 'You’re getting paper statements by mail.'}</p><button class="review-link" type="button" data-action="edit-billing">Edit billing preferences</button></section>
     <div class="review-actions"><button class="btn primary" data-action="continue-sign"><img src="./assets/edit-icon.svg" alt="">Continue to e-sign</button></div>
   </div>`);
@@ -229,45 +256,95 @@ function sign() {
 }
 
 function complete() {
-  const confetti = Array.from({ length: 84 }, (_, index) => {
-    const isRightLane = index % 2 === 1;
-    const row = Math.floor(index / 2);
-    const laneOffset = (row * 11 + index * 3) % 27;
-    const mobileLaneOffset = (row * 5 + index * 2) % 12;
-    const x = isRightLane ? 72 + laneOffset : 1 + laneOffset;
-    const mobileX = isRightLane ? 87 + mobileLaneOffset : 1 + mobileLaneOffset;
-    const direction = isRightLane ? -1 : 1;
-    const driftA = direction * (8 + (index % 5) * 3);
-    const driftB = direction * -(6 + (index % 4) * 3);
-    const startY = -(42 + (row * 47) % 460);
-    const fall = 850 + (index % 7) * 32;
-    const delay = (index % 14) * .045;
-    const duration = 4.1 + (index % 8) * .21;
-    const width = index % 3 === 0 ? 27 : 22 + (index % 4);
-    const spin = direction * (390 + (index % 6) * 88);
+  const paymentAmount = currency(selectedPayment());
+  const confettiCount = 24;
+  const confetti = Array.from({ length: confettiCount }, (_, index) => {
+    const edgeToEdgeX = 2 + index * (96 / (confettiCount - 1));
+    const x = edgeToEdgeX + ((index % 3) - 1) * .35;
+    const direction = index % 4 < 2 ? 1 : -1;
+    const driftA = direction * (14 + (index % 7) * 5);
+    const driftB = -direction * (10 + (index % 6) * 4);
+    const startY = -(6 + (index * 13) % 30);
+    const fall = 36 + (index % 8) * 2;
+    const delay = (index % 8) * .022 + Math.floor(index / 8) * .012;
+    const duration = 1.72 + (index % 3) * .03;
+    const width = index % 3 === 0 ? 25 : 18 + (index % 5);
+    const spin = direction * (92 + (index % 6) * 16);
     const startRotation = -170 + (index * 73) % 340;
     const scale = .72 + (index % 5) * .09;
-    return `<span class="confetti-piece" style="--x:${x}%;--mobile-x:${mobileX}%;--start-y:${startY}px;--drift-a:${driftA}px;--drift-b:${driftB}px;--fall-a:${Math.round(fall * .2)}px;--fall-b:${Math.round(fall * .42)}px;--fall-c:${Math.round(fall * .67)}px;--fall-d:${Math.round(fall * .84)}px;--fall:${fall}px;--delay:${delay}s;--duration:${duration}s;--piece-width:${width}px;--start-rotation:${startRotation}deg;--spin-a:${Math.round(startRotation + spin * .22)}deg;--spin-b:${Math.round(startRotation + spin * .48)}deg;--spin-c:${Math.round(startRotation + spin * .72)}deg;--spin-d:${Math.round(startRotation + spin * .88)}deg;--spin:${Math.round(startRotation + spin)}deg;--scale:${scale}"><img src="./assets/confetti-${index % 8 + 1}.svg" alt=""></span>`;
+    return `<span class="confetti-piece" style="--x:${x}%;--start-y:${startY}px;--drift-a:${driftA}px;--drift-b:${driftB}px;--fall-a:${fall * .2}dvh;--fall-b:${fall * .42}dvh;--fall-c:${fall * .67}dvh;--fall-d:${fall * .84}dvh;--fall:${fall}dvh;--delay:${delay}s;--duration:${duration}s;--piece-width:${width}px;--start-rotation:${startRotation}deg;--spin-a:${Math.round(startRotation + spin * .22)}deg;--spin-b:${Math.round(startRotation + spin * .48)}deg;--spin-c:${Math.round(startRotation + spin * .72)}deg;--spin-d:${Math.round(startRotation + spin * .88)}deg;--spin:${Math.round(startRotation + spin)}deg;--scale:${scale}"><img src="./assets/confetti-${index % 8 + 1}.svg" alt=""></span>`;
   }).join('');
 
   return shell(`<div class="completion-confetti" aria-hidden="true">${confetti}</div><div class="content complete-content">
-    <h1>Congrats, <span class="pink">{FirstName}</span>! Let’s set up your online account.</h1>
+    <h1>Congrats, <span class="pink">Erin</span>! Let’s set up your online account.</h1>
     <section class="complete-account-section"><h2>You need your account number for this</h2><div class="account-number"><span>Copy your loan account number</span><strong>123456778999</strong><button class="copy-button" data-action="copy-account" aria-label="Copy loan account number"><img src="./assets/copy.svg" alt=""></button><b>You can’t set up your online account without it</b></div></section>
     <p>Set up your account to manage your loan, view your loan documents and get your personalized money snapshot free with OneMain® MyMoney.</p>
     <button class="btn primary" data-action="account-setup-placeholder">Set up my account</button>
     <p class="complete-login">Already created an account? <button class="inline-link" type="button" data-action="login-placeholder">Log in now.</button></p>
     <section class="money-way"><h2>Your money’s on the way</h2><p>You should see the funds in your bank account within 1–2 business days.</p><p>Here are your final loan details.</p></section>
-    <div class="review-offer-card complete-offer-card"><div class="review-offer-rows"><div class="row"><span>Loan amount</span><strong>$23,000.00<small>This is an unsecured loan.</small></strong></div><div class="row"><span>Fees</span><strong>$500.00<small>The total cost of loan is $23,500.00.</small></strong></div><div class="row"><span>Term</span><strong>36 months</strong></div><div class="row"><span>APR</span><strong>10.24%</strong></div></div><div class="review-payment-due"><span>Due each month</span><strong>$644.98/mo</strong></div></div>
-    <div class="complete-notes"><p>Your first payment of $<span class="pink">{FirstPaymentAmount}</span> is due on <span class="pink">{FirstPaymentDate}</span>.</p><p>If you have any questions, give us a call at <span class="pink">{XXX–XXX–XXXX}</span>.</p></div>
+    ${loanDetailsCard('complete-offer-card')}
+    <div class="complete-notes"><p>Your first payment of <span class="pink">${paymentAmount}</span> is due on <span class="pink">09/20/2026</span>.</p><p>If you have any questions, give us a call at <span class="pink">888–890–6529</span>.</p></div>
   </div>`);
 }
 
 const views = { entry, verify, code: () => codeScreen(false), codeError: () => codeScreen(true), income, dashboard, loading, loadingOffer, offer, deposit, payment, review, sign, complete };
 
-function render() {
-  app.innerHTML = (views[state.screen] || entry)();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+const prototypePages = [
+  ['entry', 'Offer landing'],
+  ['verify', 'Verify your info'],
+  ['code', 'Security code'],
+  ['codeError', 'Security code error'],
+  ['income', 'Verify your income'],
+  ['dashboard', 'Loan dashboard'],
+  ['loading', 'Syncing information'],
+  ['loadingOffer', 'Preparing your offers'],
+  ['offer', 'Choose an offer'],
+  ['deposit', 'Where to send your money'],
+  ['payment', 'Choose payment preferences'],
+  ['review', 'Review and confirm'],
+  ['sign', 'DocuSign placeholder'],
+  ['complete', 'Confirmation']
+];
+
+function prototypeNavigator() {
+  const pageButtons = prototypePages.map(([screen, label]) => {
+    const current = screen === state.screen ? ' aria-current="page"' : '';
+    return `<button type="button" data-action="jump-screen" data-screen="${screen}"${current}>${label}</button>`;
+  }).join('');
+
+  return `<aside class="prototype-nav" aria-label="Prototype navigation">
+    <button class="prototype-nav-toggle" type="button" data-action="prototype-nav-toggle" aria-label="Open prototype page navigator" aria-expanded="false" aria-controls="prototype-page-menu">
+      <span class="prototype-nav-icon" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+    </button>
+    <div class="prototype-nav-menu" id="prototype-page-menu" hidden>
+      <div class="prototype-nav-heading">Jump to a screen</div>
+      <div class="prototype-nav-list">${pageButtons}</div>
+    </div>
+  </aside>`;
 }
+
+function render(resetScroll = true) {
+  const previousScroll = window.scrollY;
+  app.innerHTML = `${(views[state.screen] || entry)()}${prototypeNavigator()}`;
+  if (resetScroll) window.scrollTo({ top: 0, behavior: 'smooth' });
+  else {
+    window.scrollTo({ top: previousScroll, behavior: 'instant' });
+    requestAnimationFrame(() => window.scrollTo({ top: previousScroll, behavior: 'instant' }));
+  }
+  requestAnimationFrame(syncIncomeDock);
+}
+
+function syncIncomeDock() {
+  const panel = document.querySelector('.income-actions-panel');
+  if (!panel || window.innerWidth > 500) return;
+  document.querySelector('.income-content')?.style.setProperty('--income-dock-height', `${panel.offsetHeight}px`);
+  const footer = document.querySelector('.site-footer');
+  const footerOverlap = footer ? Math.max(0, window.innerHeight - footer.getBoundingClientRect().top) : 0;
+  panel.style.setProperty('--income-dock-bottom', `${footerOverlap}px`);
+}
+
+window.addEventListener('scroll', syncIncomeDock, { passive: true });
+window.addEventListener('resize', syncIncomeDock);
 
 function go(screen, remember = true) {
   clearTimeout(loadingTimer);
@@ -426,11 +503,11 @@ function changeAutopayAccountModal(opener, target = 'autopay') {
     <button class="cx-modal-close" type="button" data-bank-action="cancel" aria-label="Close change bank account modal"><img src="./assets/cx-modal-close.svg" alt=""></button>
     <div class="bank-modal-content">
       <div class="bank-modal-fields">
-        <div class="field"><label for="autopay-routing">Routing number</label><input id="autopay-routing" inputmode="numeric" maxlength="9" aria-describedby="autopay-routing-error">${inputErrorMarkup('autopay-routing-error')}</div>
-        <div class="field"><label for="autopay-account">Account number</label><input id="autopay-account" inputmode="numeric" aria-describedby="autopay-account-error">${inputErrorMarkup('autopay-account-error')}</div>
-        <div class="field"><label for="autopay-confirm">Confirm account number</label><input id="autopay-confirm" inputmode="numeric" aria-describedby="autopay-confirm-error">${inputErrorMarkup('autopay-confirm-error')}</div>
+        <div class="field"><label for="autopay-routing">Routing number</label><input id="autopay-routing" inputmode="numeric" pattern="[0-9]*" maxlength="9" aria-describedby="autopay-routing-error">${inputErrorMarkup('autopay-routing-error')}</div>
+        <div class="field"><label for="autopay-account">Account number</label><input id="autopay-account" inputmode="numeric" pattern="[0-9]*" aria-describedby="autopay-account-error">${inputErrorMarkup('autopay-account-error')}</div>
+        <div class="field"><label for="autopay-confirm">Confirm account number</label><input id="autopay-confirm" inputmode="numeric" pattern="[0-9]*" aria-describedby="autopay-confirm-error">${inputErrorMarkup('autopay-confirm-error')}</div>
       </div>
-      <fieldset class="bank-account-type"><legend>Type of account</legend><div><label class="radio-row"><input type="radio" name="autopay-account-type" value="Checking" checked><span>Checking</span></label><label class="radio-row"><input type="radio" name="autopay-account-type" value="Savings"><span>Savings</span></label></div></fieldset>
+      <fieldset class="bank-account-type" aria-describedby="autopay-account-type-error"><legend>Type of account</legend><div><label class="radio-row"><input type="radio" name="autopay-account-type" value="Checking"><span>Checking</span></label><label class="radio-row"><input type="radio" name="autopay-account-type" value="Savings"><span>Savings</span></label></div>${inputErrorMarkup('autopay-account-type-error')}</fieldset>
       <div class="account-visual bank-account-visual"><h3 class="center">Where to find your routing and account numbers</h3><div class="check-guide"><img class="check-example" src="./assets/check-example.png" alt="Example check"><div class="check-pointers" aria-hidden="true"><div class="check-pointer"><span class="check-pointer-line"></span><span class="check-pointer-tick"></span><span>Routing number</span></div><div class="check-pointer"><span class="check-pointer-line"></span><span class="check-pointer-tick"></span><span>Account number</span></div></div></div></div>
       <div class="bank-modal-actions"><button class="btn primary" type="button" data-bank-action="save">Save bank details</button><button class="btn tertiary" type="button" data-bank-action="cancel">Cancel</button></div>
     </div>
@@ -473,7 +550,15 @@ function changeAutopayAccountModal(opener, target = 'autopay') {
     if (a.length < 4) { setFieldError(account, 'We couldn’t verify this account number. Please check the number and try again.', false); invalid.push(account); }
     if (!c || a !== c) { setFieldError(confirmation, 'This number doesn’t match the one above. Please check the number and try again.', false); invalid.push(confirmation); }
     if (invalid.length) { invalid[0].focus(); return; }
-    const accountType = node.querySelector('[name="autopay-account-type"]:checked').value;
+    const accountTypeInput = node.querySelector('[name="autopay-account-type"]:checked');
+    if (!accountTypeInput) {
+      const error = node.querySelector('#autopay-account-type-error');
+      error.querySelector('.input-error-copy').textContent = 'Select checking or savings.';
+      error.hidden = false;
+      node.querySelector('[name="autopay-account-type"]').focus();
+      return;
+    }
+    const accountType = accountTypeInput.value;
     if (target === 'deposit') {
       state.routing = r;
       state.account = a;
@@ -618,16 +703,23 @@ app.addEventListener('change', (e) => {
     return;
   }
   if (e.target.id === 'plaid-consent') document.querySelector('[data-action="connect-bank"]').disabled = !e.target.checked;
-  if (e.target.name === 'offer') { state.offer = Number(e.target.value); render(); }
-  if (e.target.name === 'account-type') state.accountType = e.target.value;
+  if (e.target.name === 'offer') { state.offer = Number(e.target.value); render(false); }
+  if (e.target.name === 'account-type') {
+    state.accountType = e.target.value;
+    const error = document.querySelector('#account-type-error');
+    if (error) error.hidden = true;
+  }
   if (e.target.name === 'payment') {
     if (e.target.value === 'manual') preferenceModal('autopay', e.target);
-    else { state.payment = 'autopay'; render(); }
+    else { state.payment = 'autopay'; render(false); }
   }
-  if (e.target.name === 'payment-schedule') { state.paymentSchedule = e.target.value; render(); }
+  if (e.target.name === 'payment-schedule') { state.paymentSchedule = e.target.value; render(false); }
 });
 
 document.addEventListener('input', event => {
+  if (event.target instanceof HTMLInputElement && event.target.inputMode === 'numeric') {
+    event.target.value = event.target.value.replace(/\D/g, '');
+  }
   if (!event.target.matches('.field input')) return;
   if (event.target.id === 'routing' || event.target.id === 'confirm-account') {
     validateDepositInput(event.target);
@@ -642,8 +734,38 @@ document.addEventListener('input', event => {
 });
 
 app.addEventListener('click', (e) => {
+  const prototypeNav = document.querySelector('.prototype-nav');
+  if (prototypeNav && !e.target.closest('.prototype-nav')) {
+    const menu = prototypeNav.querySelector('.prototype-nav-menu');
+    const toggle = prototypeNav.querySelector('.prototype-nav-toggle');
+    menu.hidden = true;
+    toggle.setAttribute('aria-expanded', 'false');
+  }
+
   const el = e.target.closest('[data-action]'); if (!el) return;
   const action = el.dataset.action;
+  if (action === 'prototype-nav-toggle') {
+    const menu = document.querySelector('#prototype-page-menu');
+    const willOpen = menu.hidden;
+    menu.hidden = !willOpen;
+    el.setAttribute('aria-expanded', String(willOpen));
+    if (willOpen) menu.querySelector('button')?.focus();
+    return;
+  }
+  if (action === 'jump-screen') {
+    const target = el.dataset.screen;
+    if (!views[target]) return;
+    clearTimeout(loadingTimer);
+    if (['review', 'sign', 'complete'].includes(target)) {
+      if (state.offer === null) state.offer = 0;
+      if (!state.accountType) state.accountType = 'Checking';
+      if (!state.payment) state.payment = 'autopay';
+    }
+    state.history = [];
+    state.screen = target;
+    render();
+    return;
+  }
   if (action === 'back') { state.screen = state.history.pop() || 'entry'; render(); }
   if (action === 'apply') { if (!document.querySelector('#terms')?.checked) return showConsentError(); go('verify'); }
   if (action === 'open-tooltip') openTooltip(el.dataset.tooltip, el);
@@ -652,7 +774,7 @@ app.addEventListener('click', (e) => {
   if (action === 'plaid-info') plaidInfoModal(el);
   if (action === 'why-income') whyIncomeModal(el);
   if (action === 'send-code') go('code');
-  if (action === 'resend') toast('A new security code was sent');
+  if (action === 'resend') showSuccessAlert('A new security code was sent.', el);
   if (action === 'verify-code') { const input = document.querySelector('#security'); const v = input.value.replace(/\D/g, ''); if (v.length !== 6) return setFieldError(input, 'Enter the 6-digit security code.'); if (v === '123455' || v === '000000') return setFieldError(input, 'Invalid code. Please try again.'); go('income'); }
   if (action === 'connect-bank') go('loading');
   if (action === 'dashboard-verify') go('income', false);
@@ -673,6 +795,12 @@ app.addEventListener('click', (e) => {
     }
     if (r.length !== 9) invalidFields.push(routingInput);
     if (!c || a !== c) invalidFields.push(confirmInput);
+    if (!state.accountType) {
+      const typeError = document.querySelector('#account-type-error');
+      typeError.querySelector('.input-error-copy').textContent = 'Select checking or savings.';
+      typeError.hidden = false;
+      invalidFields.push(document.querySelector('[name="account-type"]'));
+    }
     if (invalidFields.length) {
       invalidFields[0].focus();
       return;

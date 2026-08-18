@@ -13,7 +13,33 @@ const state = {
   account: '',
   autopayAccount: '7285',
   autopayAccountType: 'Checking',
+  cookieBannerVisible: true,
 };
+
+function addMonths(date, months) {
+  const result = new Date(date);
+  const day = result.getDate();
+  result.setDate(1);
+  result.setMonth(result.getMonth() + months);
+  result.setDate(Math.min(day, new Date(result.getFullYear(), result.getMonth() + 1, 0).getDate()));
+  return result;
+}
+
+function formatDate(date) {
+  return new Intl.DateTimeFormat('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }).format(date);
+}
+
+function currentDate() {
+  return formatDate(new Date());
+}
+
+function offerExpirationDate() {
+  return formatDate(addMonths(new Date(), 1));
+}
+
+function firstPaymentDate() {
+  return formatDate(addMonths(new Date(), 1));
+}
 
 const steps = {
   verify: ['Step 1 of 5 · Verify your info', 20],
@@ -23,8 +49,7 @@ const steps = {
   offer: ['Step 2 of 5 · Choose your loan terms', 40],
   deposit: ['Step 3 of 5 · Set up direct deposit', 60],
   payment: ['Step 4 of 5 · Set up payment', 80],
-  review: ['Step 5 of 5 · Confirm and sign', 100],
-  sign: ['Step 5 of 5 · Confirm and sign', 100],
+  review: ['Step 5 of 5 · Confirm and sign', 95],
 };
 
 let loadingTimer;
@@ -72,7 +97,7 @@ function entry() {
   return shell(`<div class="content stack">
     <div><h1>Welcome, <span class="pink">Erin</span>. Ready to apply for this offer?</h1><p>It should only take a few minutes to wrap up your application.</p></div>
     <article class="card offer-hero shadow">
-      <div class="offer-top"><div class="approval-ribbon">You have outstanding odds of approval! <button class="tooltip-trigger approval-info" data-action="open-tooltip" data-tooltip="approval" aria-label="What outstanding odds of approval means" aria-expanded="false"><span class="approval-info-icon" aria-hidden="true"><img class="approval-info-mark" src="./assets/approval-info-mark.svg" alt=""><img class="approval-info-dot" src="./assets/approval-info-dot.svg" alt=""><img class="approval-info-circle" src="./assets/approval-info-circle.svg" alt=""></span></button></div><p class="selected-copy">You selected this offer<br>on <strong>Credit Karma</strong></p><button class="tooltip-trigger loan-type-trigger label-medium" data-action="open-tooltip" data-tooltip="unsecured" aria-expanded="false">UNSECURED LOAN</button><div class="offer-price"><strong>$621.26</strong><span>/ monthly payment</span></div><p class="small">Offer expires 4/18/2026</p><div class="details"><div class="row"><span>Loan amount</span><strong>$20,000</strong></div><div class="row"><span>Term</span><strong>36 months</strong></div><div class="row"><span>APR</span><strong>9.5%</strong></div></div></div>
+      <div class="offer-top"><div class="approval-ribbon">You have outstanding odds of approval! <button class="tooltip-trigger approval-info" data-action="open-tooltip" data-tooltip="approval" aria-label="What outstanding odds of approval means" aria-expanded="false"><span class="approval-info-icon" aria-hidden="true"><img class="approval-info-mark" src="./assets/approval-info-mark.svg" alt=""><img class="approval-info-dot" src="./assets/approval-info-dot.svg" alt=""><img class="approval-info-circle" src="./assets/approval-info-circle.svg" alt=""></span></button></div><p class="selected-copy">You selected this offer<br>on <strong>Credit Karma</strong></p><button class="tooltip-trigger loan-type-trigger label-medium" data-action="open-tooltip" data-tooltip="unsecured" aria-expanded="false">UNSECURED LOAN</button><div class="offer-price"><strong>$621.26</strong><span>/ monthly payment</span></div><p class="small">Offer expires ${offerExpirationDate()}</p><div class="details"><div class="row"><span>Loan amount</span><strong>$20,000</strong></div><div class="row"><span>Term</span><strong>36 months</strong></div><div class="row"><span>APR</span><strong>9.5%</strong></div></div></div>
     </article>
     <div class="entry-links"><p>Read more about our <button class="inline-link" data-action="open-disclosure" data-modal-title="Loan Amounts and Fees">Loan Amounts and Fees.</button></p><button class="inline-link" data-action="open-disclosure" data-modal-title="Learn more about our lending process">Learn more about our lending process</button></div>
     <article class="card stack-sm consent-card"><p class="body-emphasis"><strong>If everything looks good, please read and agree to the terms.</strong></p><div class="consent-control"><label class="check-row"><input id="terms" type="checkbox" aria-describedby="terms-error"><span><strong>By checking this box, I confirm that:</strong></span></label><div class="consent-error" id="terms-error" role="alert" tabindex="-1" hidden><span class="warning-icon" aria-hidden="true"><img class="warning-mark" src="./assets/warning-mark.svg" alt=""><img class="warning-dot" src="./assets/warning-dot.svg" alt=""><img class="warning-circle" src="./assets/warning-circle.svg" alt=""></span><span>Before you continue, please check the box to confirm you've read and agree to the terms.</span></div></div><div class="legal"><p>• I have reviewed, agree to and acknowledge receipt of the <a>Terms of Use</a>, <a>Electronic Consent Agreement</a>, <a>Privacy Notice</a>, <a>Privacy Policy</a>, <a>Informational Communications Authorization</a>, <a>Method Privacy Policy</a> and <a>Method Terms of Service</a>.</p><p>• I authorize OneMain Financial ("OneMain") to share information I provide with service providers for purposes of obtaining and verifying my vehicle registration information, if any, from State DMVs.</p><p>• I also authorize OneMain to obtain my credit report to review my loan application, and to see if I qualify for a credit card product from lending partners of OneMain as well as share my application information with these lending partners.</p><p>• I am not using, or planning to use, a debt relief company to settle debts.</p><p>• I authorize Forward Lending, Inc. d/b/a Method, to be my agent to obtain my credit reports via soft inquiries; share information and related data about my balances with creditors with OneMain; and, if I choose, send my loan proceeds to creditors I select.</p></div><p class="center body-emphasis">Clicking the button below may affect your credit score.</p></article>
@@ -205,7 +230,7 @@ function deposit() {
 function payment() {
   return shell(`<div class="content stack">
     <div><h1>Choose your payment and billing preferences</h1><p>Save time each month with AutoPay. Your payments will be made automatically on a schedule you select.</p></div>
-    <div class="payment-options"><div class="payment-autopay"><label class="flat-option payment-choice"><input type="radio" name="payment" value="autopay" ${state.payment === 'autopay' ? 'checked' : ''}><span><span class="payment-choice-title">Set up AutoPay <span class="tag">☆ Recommended</span></span>${state.payment === 'autopay' ? `<span class="small payment-bank">${state.autopayAccountType} Acct#: XXXX${state.autopayAccount}</span><button class="inline-link small" type="button" data-action="change-autopay-account">Change bank account</button>` : ''}</span></label>${state.payment === 'autopay' ? autopaySchedules() : ''}</div><label class="flat-option payment-choice"><input type="radio" name="payment" value="manual" ${state.payment === 'manual' ? 'checked' : ''}><span>I’ll make payments one at a time<span class="small payment-description">Due on the <span class="pink">10th</span> of every month. You can pay online, by phone or by mail. For more information, see <a class="link">our payments FAQ.</a></span></span></label></div>
+    <div class="payment-options"><div class="payment-autopay"><label class="flat-option payment-choice"><input type="radio" name="payment" value="autopay" ${state.payment === 'autopay' ? 'checked' : ''}><span><span class="payment-choice-title">Set up AutoPay <span class="tag">☆ Recommended</span></span><span class="small payment-bank">${state.autopayAccountType} Acct#: XXXX${state.autopayAccount}</span><button class="inline-link small" type="button" data-action="change-autopay-account">Change bank account</button></span></label>${state.payment === 'autopay' ? autopaySchedules() : ''}</div><label class="flat-option payment-choice"><input type="radio" name="payment" value="manual" ${state.payment === 'manual' ? 'checked' : ''}><span>I’ll make payments one at a time<span class="small payment-description">Due on the <span class="pink">10th</span> of every month. You can pay online, by phone or by mail. For more information, see <a class="link">our payments FAQ.</a></span></span></label></div>
     <article class="billing-status"><h2>Paperless billing is ${state.paperless ? 'on' : 'off'}</h2><p class="small">${state.paperless ? 'We’ll email you at <span class="pink">erin.miller@example.com</span> each month when your billing statement becomes available online. You can change the email address later if needed.' : 'We’ll mail you paper billing statements each month.'}</p><button class="text-button billing-toggle" data-action="${state.paperless ? 'paper-modal' : 'enable-paperless'}">${state.paperless ? 'Mail me paper statements instead' : 'Go paperless instead'}</button></article>
     <button class="btn primary" data-action="save-payment" ${state.payment ? '' : 'disabled'}>Save and continue</button>
   </div>`);
@@ -241,11 +266,11 @@ function review() {
   const paymentAmount = currency(selectedPayment());
   const frequency = paymentFrequency();
   return shell(`<div class="content review-content">
-    <div class="review-headline"><h1>Confirm your loan details before you e-sign</h1><p>Almost done! Please review and confirm your selections.</p><p>The below information is accurate as of today, <span class="pink">08/13/2026</span>.</p></div>
-    <div class="review-party-card"><div><h3>Lender</h3><p>OneMain Financial<br><span class="pink">2115 Linwood Ave.<br>Fort Lee, NJ 07024</span></p></div><div><h3>Borrower</h3><p class="pink">Erin<br>Miller</p></div></div>
+    <div class="review-headline"><h1>Confirm your loan details before you e-sign</h1><p>Almost done! Please review and confirm your selections.</p><p>The below information is accurate as of today, <span class="pink">${currentDate()}</span>.</p></div>
+    <div class="review-party-card"><div><h3>Lender</h3><p>OneMain Financial<br><span class="pink">2115 Linwood Ave.<br>Fort Lee, NJ 07024</span></p></div><div><h3>Borrower</h3><p class="pink">Erin Miller<br>425 Oak Street<br>Fort Lee, NJ 07024</p></div></div>
     ${loanDetailsCard()}
     <section class="review-card"><h2>Direct deposit</h2><p>${state.accountType} account</p><strong>Bank of America ...${depositLastFour}</strong><button class="review-link" type="button" data-action="change-deposit-account">Change account</button></section>
-    <section class="review-card review-autopay"><h2>${state.payment === 'autopay' ? 'AutoPay is on' : 'AutoPay is off'}</h2>${state.payment === 'autopay' ? `<p>Automatic payments of <span class="pink">${paymentAmount}</span> will be made <span class="pink">${frequency}</span> from your bank account.</p><strong>Bank of America ...${state.autopayAccount}</strong>` : '<p>You’ll make payments one at a time.</p>'}<button class="review-link" type="button" data-action="edit-payment">Edit AutoPay settings</button>${state.payment === 'autopay' ? `<div class="divider"></div><p>Your first payment of <span class="pink">${paymentAmount}</span> will be made on <span class="pink">09/20/2026</span>.</p><p class="review-note">Note: Your first payment amount may be higher than your monthly payment amount because of a longer first payment period.</p>` : ''}</section>
+    <section class="review-card review-autopay"><h2>${state.payment === 'autopay' ? 'AutoPay is on' : 'AutoPay is off'}</h2>${state.payment === 'autopay' ? `<p>Automatic payments of <span class="pink">${paymentAmount}</span> will be made <span class="pink">${frequency}</span> from your bank account.</p><strong>Bank of America ...${state.autopayAccount}</strong>` : '<p>You’ll make payments one at a time.</p>'}<button class="review-link" type="button" data-action="edit-payment">Edit AutoPay settings</button>${state.payment === 'autopay' ? `<div class="divider"></div><p>Your first payment of <span class="pink">${paymentAmount}</span> will be made on <span class="pink">${firstPaymentDate()}</span>.</p><p class="review-note">Note: Your first payment amount may be higher than your monthly payment amount because of a longer first payment period.</p>` : ''}</section>
     <section class="review-card"><h2>Paperless billing is ${state.paperless ? 'on' : 'off'}</h2><p>${state.paperless ? 'You’re getting paperless statements.' : 'You’re getting paper statements by mail.'}</p><button class="review-link" type="button" data-action="edit-billing">Edit billing preferences</button></section>
     <div class="review-actions"><button class="btn primary" data-action="continue-sign"><img src="./assets/edit-icon.svg" alt="">Continue to e-sign</button></div>
   </div>`);
@@ -283,7 +308,7 @@ function complete() {
     <p class="complete-login">Already created an account? <button class="inline-link" type="button" data-action="login-placeholder">Log in now.</button></p>
     <section class="money-way"><h2>Your money’s on the way</h2><p>You should see the funds in your bank account within 1–2 business days.</p><p>Here are your final loan details.</p></section>
     ${loanDetailsCard('complete-offer-card')}
-    <div class="complete-notes"><p>Your first payment of <span class="pink">${paymentAmount}</span> is due on <span class="pink">09/20/2026</span>.</p><p>If you have any questions, give us a call at <span class="pink">888–890–6529</span>.</p></div>
+    <div class="complete-notes"><p>Your first payment of <span class="pink">${paymentAmount}</span> is due on <span class="pink">${firstPaymentDate()}</span>.</p><p>If you have any questions, give us a call at <span class="pink">888–890–6529</span>.</p></div>
   </div>`);
 }
 
@@ -323,9 +348,17 @@ function prototypeNavigator() {
   </aside>`;
 }
 
+function cookieBanner() {
+  if (!state.cookieBannerVisible) return '';
+  return `<aside class="cookie-banner" role="region" aria-label="Cookie preferences">
+    <p>We, and our third-party partners, use cookies, pixels, and other technologies to collect, record, and share information you provide, as well as information about your interactions with our site for ad targeting, analytics, personalization, and site functionality purposes. By clicking one of the buttons below or continuing to use our website, you agree to the use of these technologies (as described in our <a href="https://www.onemainfinancial.com/legal/privacy-policy" target="_blank" rel="noreferrer">Privacy Policy</a> and subject to your settings) and our <a href="https://www.onemainfinancial.com/legal/terms-of-use" target="_blank" rel="noreferrer">Terms of Use</a> (which contains important waivers).</p>
+    <div class="cookie-actions"><button class="btn tertiary" type="button" data-action="reject-cookies">Reject all optional</button><button class="btn primary" type="button" data-action="accept-cookies">Accept all</button></div>
+  </aside>`;
+}
+
 function render(resetScroll = true) {
   const previousScroll = window.scrollY;
-  app.innerHTML = `${(views[state.screen] || entry)()}${prototypeNavigator()}`;
+  app.innerHTML = `${(views[state.screen] || entry)()}${prototypeNavigator()}${cookieBanner()}`;
   if (resetScroll) window.scrollTo({ top: 0, behavior: 'smooth' });
   else {
     window.scrollTo({ top: previousScroll, behavior: 'instant' });
@@ -386,7 +419,7 @@ function phoneModal() {
     <button class="cx-modal-close" id="phone-close" type="button" aria-label="Close change mobile number modal"><img src="./assets/cx-modal-close.svg" alt=""></button>
     <div class="phone-modal-icon" aria-hidden="true"><img src="./assets/phone-modal-icon.svg" alt=""></div>
     <div class="phone-modal-copy"><h2 id="phone-modal-title">Change mobile number</h2><p>Enter the mobile number you want to use to verify your identity.</p></div>
-    <div class="field phone-modal-field"><label for="new-phone">Phone number</label><input id="new-phone" inputmode="tel" autocomplete="tel" placeholder="(555) 555-5555" aria-describedby="new-phone-error">${inputErrorMarkup('new-phone-error')}</div>
+    <div class="field phone-modal-field"><label for="new-phone">Phone number</label><input id="new-phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="14" placeholder="(555) 555-5555" aria-describedby="new-phone-error">${inputErrorMarkup('new-phone-error')}</div>
     <div class="phone-modal-actions"><button class="btn primary" id="save-phone">Change number</button><button class="btn tertiary" id="cancel-phone">Go back</button></div>
   </section>`;
   document.body.appendChild(node);
@@ -397,6 +430,14 @@ function phoneModal() {
   node.querySelector('#cancel-phone').onclick = close;
   node.addEventListener('click', event => { if (event.target === node) close(); });
   node.addEventListener('keydown', event => { if (event.key === 'Escape') close(); });
+  node.querySelector('#new-phone').addEventListener('input', event => {
+    const digits = event.target.value.replace(/\D/g, '').slice(0, 10);
+    if (!digits) event.target.value = '';
+    else if (digits.length <= 3) event.target.value = `(${digits}`;
+    else if (digits.length <= 6) event.target.value = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+    else event.target.value = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+    clearFieldError(event.target);
+  });
   node.querySelector('#save-phone').onclick = () => {
     const input = node.querySelector('#new-phone');
     const digits = input.value.replace(/\D/g, '');
@@ -717,6 +758,7 @@ app.addEventListener('change', (e) => {
 });
 
 document.addEventListener('input', event => {
+  if (event.target instanceof HTMLInputElement && event.target.id === 'new-phone') return;
   if (event.target instanceof HTMLInputElement && event.target.inputMode === 'numeric') {
     event.target.value = event.target.value.replace(/\D/g, '');
   }
@@ -744,6 +786,11 @@ app.addEventListener('click', (e) => {
 
   const el = e.target.closest('[data-action]'); if (!el) return;
   const action = el.dataset.action;
+  if (action === 'accept-cookies' || action === 'reject-cookies') {
+    state.cookieBannerVisible = false;
+    render(false);
+    return;
+  }
   if (action === 'prototype-nav-toggle') {
     const menu = document.querySelector('#prototype-page-menu');
     const willOpen = menu.hidden;

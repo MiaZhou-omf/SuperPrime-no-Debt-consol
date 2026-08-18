@@ -517,6 +517,12 @@ input[type="radio"]:checked { background-image: url('./assets/radio-on.svg'); }
 .prototype-nav-list button:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
 .prototype-nav-list button[aria-current="page"] { background: #e3f2ff; color: var(--blue); font-family: var(--font-medium); }
 
+.cookie-banner { position: fixed; right: 0; bottom: 0; left: 0; z-index: 130; width: 100vw; max-width: none; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 32px; border: 1px solid rgba(0,0,0,.5); padding: 24px 32px; background: white; box-shadow: 0 -8px 24px rgba(31,31,33,.14); }
+.cookie-banner p { color: var(--ink); font-family: var(--font-medium); font-size: 13px; line-height: 16px; }
+.cookie-banner a { color: var(--blue); font-family: var(--font-semibold); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+.cookie-actions { display: flex; align-items: center; gap: 16px; margin-top: 0; }
+.cookie-actions .btn { width: auto; min-width: 180px; height: 40px; min-height: 40px; padding: 0 24px; font-size: 15px; line-height: 20px; white-space: nowrap; }
+
 @media (max-width: 500px) {
   :root { background: var(--canvas); }
   .completion-confetti { height: 100dvh; }
@@ -570,6 +576,9 @@ input[type="radio"]:checked { background-image: url('./assets/radio-on.svg'); }
   #app:has(.income-content) .prototype-nav { bottom: calc(var(--income-dock-height, 304px) + 12px); }
   .prototype-nav-toggle { width: 48px; height: 48px; }
   .prototype-nav-menu { bottom: 58px; }
+  .cookie-banner { right: 0; bottom: 0; left: 0; width: 100vw; max-width: none; display: grid; grid-template-columns: 1fr; align-items: stretch; gap: 6px; padding: 24px; }
+  .cookie-actions { display: grid; gap: 16px; margin-top: 10px; }
+  .cookie-actions .btn { width: 100%; min-width: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

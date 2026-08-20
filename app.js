@@ -46,7 +46,7 @@ const steps = {
   code: ['Step 1 of 5 · Verify your info', 20],
   codeError: ['Step 1 of 5 · Verify your info', 20],
   income: ['Step 1 of 5 · Verify your info', 20],
-  offer: ['Step 2 of 5 · Choose your loan terms', 40],
+  offer: ['Step 2 of 5 · Customize your loan details', 40],
   deposit: ['Step 3 of 5 · Set up direct deposit', 60],
   payment: ['Step 4 of 5 · Set up payment', 80],
   review: ['Step 5 of 5 · Confirm and sign', 95],
@@ -133,7 +133,7 @@ function income() {
     <article class="income-consent" tabindex="0" aria-labelledby="income-consent-title">
       <h2 id="income-consent-title">Consent for third-party access to<br>personal financial data</h2>
       <p>You authorize OneMain to access your personal financial information ("your data") held by each financial institution you designate in the following screens. OneMain has retained Plaid as its data aggregator to help us transfer your data securely and accurately.</p>
-      <p>You are seeking a consumer loan from OneMain. We also provide free financial wellness tools to our loan customers. Our uses of your data will include verifying your identity, contact information, and income; underwriting your loan request; fraud detection and protecting you from identity theft; disbursing loan proceeds; setting up your loan payments; servicing your account and collecting past-due amounts; reassessing your risk profile from time to time; powering financial wellness tools; and other uses expressly allowed by law.</p>
+      <p>You are seeking a consumer loan from OneMain. Our uses of your data will include verifying your identity, contact information, and income; underwriting your loan request; fraud detection and protecting you from identity theft; disbursing loan proceeds; setting up your loan payments; servicing your account and collecting past-due amounts; reassessing your risk profile from time to time; powering free financial wellness tools; and other uses expressly allowed by law.</p>
       <p>OneMain and our data aggregator will collect, use, and retain your data obtained from the financial institution only for the purpose of providing these products and services to you. OneMain and our data aggregator maintain policies and procedures to comply with applicable law.</p>
       <p>OneMain will receive the following categories of personal financial information from your financial institution (if available):</p>
       <ul><li>Your name, contact information, and other personal information</li><li>Account numbers</li><li>Account balances</li><li>Account status</li><li>Payment instructions</li><li>Up to 2 years of transaction history including financial details, payment methods, and, in some cases, precise geolocation of the transaction</li></ul>
@@ -213,7 +213,7 @@ function offer() {
   return shell(`<div class="content stack">
     <div><h1>You’re approved! Choose the loan that works for you.</h1><p>You qualify for multiple loan options, <span class="pink">Erin</span>.<sup>1</sup> Select the best fit for your needs.</p></div>
     <div class="choice-list">${offers.map((o, i) => `<label class="choice ${state.offer === i ? 'selected' : ''}"><div class="choice-head"><span class="tag offer-tag"><img class="offer-tag-icon" src="./assets/offer-${o.icon}-icon.svg" alt="">${o.tag}</span><input type="radio" name="offer" value="${i}" ${state.offer === i ? 'checked' : ''}></div><div class="amount">${currency(o.monthly)} <small>/ monthly payment</small></div><div class="details"><div class="row"><span>Loan amount</span><strong>${currency(o.amount, 0)}</strong></div><div class="row"><span>Term</span><strong>${o.term} months</strong></div><div class="row"><span>APR</span><strong>${o.apr.toFixed(2)}%</strong></div></div></label>`).join('')}</div>
-    <button class="btn primary" data-action="choose-offer" ${state.offer === null ? 'disabled' : ''}>Save and continue</button><p class="ds-footer-note"><sup>1</sup>These quotes are <a class="link">unsecured loans</a> closest to your requested amount. Offers may refresh at 12 am ET. To compare all your options and learn more details about <button class="footer-inline-link" type="button" data-action="open-disclosure" data-modal-title="Loan Amounts and Fees">our loan amounts and fees</button>, including loans secured with your vehicle, please <a class="link" href="tel:8888906529">give us a call.</a></p>
+    <button class="btn primary" data-action="choose-offer" ${state.offer === null ? 'disabled' : ''}>Save and continue</button><p class="ds-footer-note"><sup>1</sup>These quotes are <button class="footer-inline-link" type="button" data-action="open-disclosure" data-modal-title="Unsecured loans">unsecured loans</button> closest to your requested amount. Offers may refresh at 12 am ET. To compare all your options and learn more details about <button class="footer-inline-link" type="button" data-action="open-disclosure" data-modal-title="Loan Amounts and Fees">our loan amounts and fees</button>, including loans secured with your vehicle, please <a class="link" href="tel:+18888906529">give us a call.</a></p>
   </div>`);
 }
 
@@ -230,7 +230,7 @@ function deposit() {
 function payment() {
   return shell(`<div class="content stack">
     <div><h1>Choose your payment and billing preferences</h1><p>Save time each month with AutoPay. Your payments will be made automatically on a schedule you select.</p></div>
-    <div class="payment-options"><div class="payment-autopay"><label class="flat-option payment-choice"><input type="radio" name="payment" value="autopay" ${state.payment === 'autopay' ? 'checked' : ''}><span><span class="payment-choice-title">Set up AutoPay <span class="tag">☆ Recommended</span></span><span class="small payment-bank">${state.autopayAccountType} Acct#: XXXX${state.autopayAccount}</span><button class="inline-link small" type="button" data-action="change-autopay-account">Change bank account</button></span></label>${state.payment === 'autopay' ? autopaySchedules() : ''}</div><label class="flat-option payment-choice"><input type="radio" name="payment" value="manual" ${state.payment === 'manual' ? 'checked' : ''}><span>I’ll make payments one at a time<span class="small payment-description">Due on the <span class="pink">10th</span> of every month. You can pay online, by phone or by mail. For more information, see <a class="link">our payments FAQ.</a></span></span></label></div>
+    <div class="payment-options"><div class="payment-autopay"><label class="flat-option payment-choice"><input type="radio" name="payment" value="autopay" ${state.payment === 'autopay' ? 'checked' : ''}><span><span class="payment-choice-title">Set up AutoPay <span class="tag">☆ Recommended</span></span><span class="small payment-bank">${state.autopayAccountType} Acct#: XXXX${state.autopayAccount}</span><button class="inline-link small" type="button" data-action="change-autopay-account">Change bank account</button></span></label>${state.payment === 'autopay' ? autopaySchedules() : ''}</div><label class="flat-option payment-choice"><input type="radio" name="payment" value="manual" ${state.payment === 'manual' ? 'checked' : ''}><span>I’ll make payments one at a time<span class="small payment-description">Due on the <span class="pink">10th</span> of every month. You can pay online, by phone or by mail. For more information, see <a class="link" href="https://www.onemainfinancial.com/help-center/products/personal-and-auto-loans/topics/making-loan-payments" target="_blank" rel="noreferrer">our payments FAQ.</a></span></span></label></div>
     <article class="billing-status"><h2>Paperless billing is ${state.paperless ? 'on' : 'off'}</h2><p class="small">${state.paperless ? 'We’ll email you at <span class="pink">erin.miller@example.com</span> each month when your billing statement becomes available online. You can change the email address later if needed.' : 'We’ll mail you paper billing statements each month.'}</p><button class="text-button billing-toggle" data-action="${state.paperless ? 'paper-modal' : 'enable-paperless'}">${state.paperless ? 'Mail me paper statements instead' : 'Go paperless instead'}</button></article>
     <button class="btn primary" data-action="save-payment" ${state.payment ? '' : 'disabled'}>Save and continue</button>
   </div>`);
@@ -536,6 +536,30 @@ function preferenceModal(type, opener) {
   node.querySelector('.preference-modal').focus();
 }
 
+function accountNumberReminderModal(opener) {
+  const node = document.createElement('div');
+  node.className = 'preference-modal-backdrop';
+  node.innerHTML = `<section class="preference-modal cx-modal cx-modal-compact" role="dialog" aria-modal="true" aria-labelledby="account-reminder-title" tabindex="-1">
+    <div class="preference-modal-handle cx-modal-handle" aria-hidden="true"><img src="./assets/cx-modal-handle.svg" alt=""></div>
+    <button class="cx-modal-close" type="button" data-account-reminder-action="back" aria-label="Close account number reminder"><img src="./assets/cx-modal-close.svg" alt=""></button>
+    <div class="preference-modal-content">
+      <div class="preference-bell" aria-hidden="true"><span><img class="income-bell-main" src="./assets/income-bell-main.svg" alt=""><img class="income-bell-dot" src="./assets/income-bell-dot.svg" alt=""></span></div>
+      <div class="preference-modal-copy"><h2 id="account-reminder-title">Did you copy your loan account number?</h2><p>You’ll need this number to set up your online account on the next screen.</p></div>
+      <div class="preference-modal-actions"><button class="btn primary" type="button" data-account-reminder-action="back">No, go back</button><button class="btn tertiary" type="button" data-account-reminder-action="continue">Yes, continue</button></div>
+    </div>
+  </section>`;
+  document.body.appendChild(node);
+  document.body.classList.add('modal-open');
+  const close = () => { document.body.classList.remove('modal-open'); node.remove(); opener?.focus(); };
+  node.addEventListener('click', event => {
+    const action = event.target.closest('[data-account-reminder-action]')?.dataset.accountReminderAction;
+    if (action === 'back' || event.target === node) close();
+    if (action === 'continue') { close(); toast('Online account setup placeholder'); }
+  });
+  node.addEventListener('keydown', event => { if (event.key === 'Escape') close(); });
+  node.querySelector('.preference-modal').focus();
+}
+
 function changeAutopayAccountModal(opener, target = 'autopay') {
   const node = document.createElement('div');
   node.className = 'bank-modal-backdrop';
@@ -654,6 +678,8 @@ function validateDepositInput(input) {
 }
 
 function disclosureModal(title, opener) {
+  const isLendingProcess = title === 'Learn more about our lending process';
+  const isUnsecuredLoan = title === 'Unsecured loans';
   const node = document.createElement('div');
   node.className = 'disclosure-backdrop';
   node.setAttribute('role', 'presentation');
@@ -662,8 +688,8 @@ function disclosureModal(title, opener) {
     <button class="cx-modal-close" type="button" data-action="close-disclosure" aria-label="Close disclosure"><img src="./assets/cx-modal-close.svg" alt=""></button>
     <div class="disclosure-scroll">
       <div class="document-icon" aria-hidden="true"><div class="document-glyph"><span class="icon-line-wrap icon-line-one"><img src="./assets/modal-icon-line.svg" alt=""></span><span class="icon-line-wrap icon-line-two"><img src="./assets/modal-icon-line.svg" alt=""></span><span class="icon-page-wrap"><img src="./assets/modal-icon-page.svg" alt=""></span><span class="icon-fold-wrap"><img src="./assets/modal-icon-fold.svg" alt=""></span></div></div>
-      <div class="disclosure-copy"><h2 id="disclosure-title">${title === 'Learn more about our lending process' ? 'Our lending process' : 'Loan Amounts and Fees'}</h2>
-        ${title === 'Learn more about our lending process' ? lendingProcessCopy() : loanFeesCopy()}
+      <div class="disclosure-copy"><h2 id="disclosure-title">${isLendingProcess ? 'Our lending process' : isUnsecuredLoan ? 'Unsecured loans' : 'Loan Amounts and Fees'}</h2>
+        ${isLendingProcess ? lendingProcessCopy() : isUnsecuredLoan ? '<p>A loan that does not require you to provide collateral to the lender</p>' : loanFeesCopy()}
       </div>
       <div class="disclosure-actions"><button class="modal-close" data-action="close-disclosure">Close</button></div>
     </div>
@@ -862,7 +888,7 @@ app.addEventListener('click', (e) => {
   if (action === 'save-payment') go('review');
   if (action === 'continue-sign') go('sign');
   if (action === 'complete-docusign') go('complete');
-  if (action === 'account-setup-placeholder') toast('Online account setup placeholder');
+  if (action === 'account-setup-placeholder') accountNumberReminderModal(el);
   if (action === 'login-placeholder') toast('Account login placeholder');
   if (action === 'copy-account') { navigator.clipboard?.writeText('123456778999'); showSuccessAlert('Loan account number copied!', el); }
   if (action === 'restart') { state.history = []; go('entry', false); }
